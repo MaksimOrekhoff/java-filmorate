@@ -16,8 +16,8 @@ import java.util.Map;
 @RequestMapping("/users")
 @Slf4j
 public class UserController {
-    private final Map<Integer, User> users = new HashMap<>();
-    int id = 0;
+    private final Map<Long, User> users = new HashMap<>();
+    private long id = 0;
 
 
     @GetMapping
@@ -27,20 +27,19 @@ public class UserController {
     }
 
     @PostMapping
-    @ResponseBody
     public User create(@RequestBody User user, HttpServletRequest request) {
-        checkConformity(user);
+        validate(user);
         user.setId(++id);
         users.put(id, user);
         log.info("Получен запрос к эндпоинту: '{} {}', Строка параметров запроса: '{}'",
                 request.getMethod(), request.getRequestURI(), request.getQueryString());
-        return users.get(users.size());
+        return users.get(id);
     }
 
     @PutMapping
     public User put(@RequestBody User user) {
         if (users.containsKey(user.getId())) {
-            checkConformity(user);
+            validate(user);
             users.put(user.getId(), user);
             log.debug("Текущее количество пользователей: {}", users.size());
             return user;
@@ -49,7 +48,7 @@ public class UserController {
         }
     }
 
-    private void checkConformity(User user) {
+    public void validate(User user) {
 
         if (user.getEmail() == null || user.getEmail().isBlank()) {
             throw new InvalidEmailException("Адрес электронной почты не может быть пустым.");

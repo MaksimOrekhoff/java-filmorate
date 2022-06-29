@@ -17,9 +17,9 @@ import java.util.Map;
 @RequestMapping("/films")
 @Slf4j
 public class FilmController {
-    private final Map<Integer, Film> films = new HashMap<>();
-    int id = 0;
-    private LocalDate happyBirthdayMovie = LocalDate.of(1895, 12, 28);
+    private final Map<Long, Film> films = new HashMap<>();
+    private long id = 0;
+    private final LocalDate happyBirthdayMovie = LocalDate.of(1895, 12, 28);
 
     @GetMapping
     public Collection<Film> findAll() {
@@ -28,20 +28,19 @@ public class FilmController {
     }
 
     @PostMapping
-    @ResponseBody
     public Film create(@RequestBody Film film, HttpServletRequest request) {
-        checkConformity(film);
+        validate(film);
         film.setId(++id);
         films.put(id, film);
         log.info("Получен запрос к эндпоинту: '{} {}', Строка параметров запроса: '{}'",
                 request.getMethod(), request.getRequestURI(), request.getQueryString());
-        return films.get(films.size());
+        return films.get(id);
     }
 
     @PutMapping
     public Film put(@RequestBody Film film) {
         if (films.containsKey(film.getId())) {
-            checkConformity(film);
+            validate(film);
             films.put(film.getId(), film);
             log.debug("Текущее количество фильмов: {}", films.size());
             return film;
@@ -50,9 +49,9 @@ public class FilmController {
         }
     }
 
-    private void checkConformity(Film film) {
+    public void validate(Film film) {
         if (film.getName() == null || film.getName().isBlank()) {
-            throw new InvalidEmailException("Название не может быть пустым.");
+            throw new ValidationException("Название не может быть пустым.");
         }
 
         if (film.getDescription().length() > 200) {
