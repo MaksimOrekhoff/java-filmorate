@@ -6,8 +6,6 @@ import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -36,15 +34,6 @@ class UserControllerTest {
     void validateLoginIsContainsSpace() {
         final User user = new User(1, "newUser@email", "Us er", "User", LocalDate.of(1996, 7, 3));
         assertThrows(ValidationException.class, () -> userController.validate(user));
-    }
-
-    @Test
-    void validateNameIsEmpty() {
-        final User user = new User(1, "newUser@email", "Login", "", LocalDate.of(1996, 7, 3));
-        userController.validate(user);
-        final List<User> getUser = (List<User>) userController.findAll();
-        User user1 = getUser.get(0);
-        assertEquals(user.getLogin(), user1.getName());
     }
 
     @Test
