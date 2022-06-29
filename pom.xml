@@ -13,7 +13,7 @@
     <artifactId>filmorate</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>filmorate</name>
-    <description>Demo project for Spring Boot</description>
+    <description>Сервис-помощник по подбору фильмов</description>
     <properties>
         <java.version>11</java.version>
     </properties>
