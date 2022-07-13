@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exceptions.InvalidEmailException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
@@ -60,11 +61,11 @@ public class UserService {
     public void validate(User user) {
 
         if (user.getEmail() == null || user.getEmail().isBlank()) {
-            throw new ValidationException("Адрес электронной почты не может быть пустым.");
+            throw new InvalidEmailException("Адрес электронной почты не может быть пустым.");
         }
 
         if (!user.getEmail().contains("@")) {
-            throw new ValidationException("Адрес электронной почты должен содержать символ @.");
+            throw new InvalidEmailException("Адрес электронной почты должен содержать символ @.");
         }
 
         if (user.getLogin() == null || user.getLogin().isBlank()) {
