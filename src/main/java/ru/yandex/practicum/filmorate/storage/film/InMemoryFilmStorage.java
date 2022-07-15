@@ -25,23 +25,14 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public void removesFilm(Long idFilm) {
-        if (films.containsKey(idFilm)) {
-            films.remove(idFilm);
-            log.info("Фильм удален.");
-        } else {
-            throw new FilmNotFoundException("Film not found.");
-        }
+        films.remove(idFilm);
     }
 
     @Override
     public Film changeFilm(Film film) {
-        if (films.containsKey(film.getId())) {
-            films.put(film.getId(), film);
-            log.debug("Текущее количество фильмов: {}", films.size());
-            return film;
-        } else {
-            throw new FilmNotFoundException("Фильм с таким Id не существует.");
-        }
+        films.put(film.getId(), film);
+        log.debug("Текущее количество фильмов: {}", films.size());
+        return film;
     }
 
     @Override
@@ -52,30 +43,18 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film findFilm(Long id) {
-        if (films.containsKey(id)) {
-            return films.get(id);
-        } else {
-            throw new FilmNotFoundException("Фильм с таким Id не существует.");
-        }
+        return films.get(id);
     }
 
     @Override
     public Film userSetLike(Long id, Long userId) {
-        if (films.containsKey(id)) {
-            films.get(id).getLikes().add(userId);
-            return films.get(id);
-        } else {
-            throw new FilmNotFoundException("Фильм с таким Id не существует.");
-        }
+        films.get(id).getLikes().add(userId);
+        return films.get(id);
     }
 
     @Override
     public void removeLikeUser(Long id, Long userId) {
-        if (films.containsKey(id) && films.get(id).getLikes().contains(userId)) {
-            films.get(id).getLikes().remove(userId);
-        } else {
-            throw new UserNotFoundException("Пользователь с таким Id  не существует.");
-        }
+        films.get(id).getLikes().remove(userId);
     }
 
     @Override
@@ -84,10 +63,11 @@ public class InMemoryFilmStorage implements FilmStorage {
                 .sorted(Comparator.comparingLong(film -> film.getLikes().size()))
                 .collect(Collectors.toList());
         Collections.reverse(films1);
-        if (count == null) {
-            return films1.stream().limit(10).collect(Collectors.toList());
-        } else {
-            return films1.stream().limit(count).collect(Collectors.toList());
-        }
+        return films1;
+    }
+
+    @Override
+    public Set<Long> keyFilms() {
+        return films.keySet();
     }
 }

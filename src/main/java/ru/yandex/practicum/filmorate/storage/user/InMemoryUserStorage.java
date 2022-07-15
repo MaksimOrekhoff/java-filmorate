@@ -2,12 +2,7 @@ package ru.yandex.practicum.filmorate.storage.user;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
-import ru.yandex.practicum.filmorate.model.ErrorResponse;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.*;
@@ -29,13 +24,10 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User changeUser(User user) {
-        if (users.containsKey(user.getId())) {
-            users.put(user.getId(), user);
-            log.debug("Текущее количество пользователей: {}", users.size());
-            return user;
-        } else {
-            throw new UserNotFoundException("Пользователь с таким Id  не существует.");
-        }
+        users.put(user.getId(), user);
+        log.debug("Текущее количество пользователей: {}", users.size());
+        return user;
+
     }
 
     @Override
@@ -46,13 +38,8 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public void removeUser(Long idUser) {
-        if (users.containsKey(idUser)) {
-            users.remove(idUser);
-            log.info("Пользователь с номером " + idUser + " удален.");
-        } else {
-            throw new UserNotFoundException("Пользователь с таким Id  не существует.");
-        }
-
+        users.remove(idUser);
+        log.info("Пользователь с номером " + idUser + " удален.");
     }
 
     @Override
@@ -71,34 +58,21 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User findUser(Long id) {
-        if (users.containsKey(id)) {
-            return users.get(id);
-        } else {
-            throw new UserNotFoundException("Пользователь с таким Id  не существует.");
-        }
+        return users.get(id);
     }
 
     @Override
     public void addUserInFriend(Long id, Long friendId) {
-        if (users.containsKey(id) && users.containsKey(friendId)) {
-            users.get(id).getFriends().add(friendId);
-            users.get(friendId).getFriends().add(id);
-            log.info("Пользователь с номером " + id + " добавил в друзья пользователя " + friendId);
-        } else {
-            throw new UserNotFoundException("Пользователь с таким Id  не существует.");
-        }
+        users.get(id).getFriends().add(friendId);
+        users.get(friendId).getFriends().add(id);
+        log.info("Пользователь с номером " + id + " добавил в друзья пользователя " + friendId);
     }
 
     @Override
     public void removeUserInFriends(Long id, Long friendId) {
-        if (users.containsKey(id)) {
-            users.get(id).getFriends().remove(friendId);
-            users.get(friendId).getFriends().remove(id);
-            log.info("Пользователь с номером " + id + " удалил из друзей пользователя " + friendId);
-        } else {
-            throw new UserNotFoundException("Пользователь с таким Id  не существует.");
-        }
-
+        users.get(id).getFriends().remove(friendId);
+        users.get(friendId).getFriends().remove(id);
+        log.info("Пользователь с номером " + id + " удалил из друзей пользователя " + friendId);
     }
 
     @Override
@@ -112,5 +86,10 @@ public class InMemoryUserStorage implements UserStorage {
             second.retainAll(first);
             return second;
         }
+    }
+
+    @Override
+    public Set<Long> keyUsers() {
+        return users.keySet();
     }
 }
