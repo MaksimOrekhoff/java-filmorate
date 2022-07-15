@@ -1,8 +1,9 @@
-package ru.yandex.practicum.filmorate.service.user;
+package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.InvalidEmailException;
+import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
@@ -31,11 +32,19 @@ public class UserService {
 
     public User changeUser(User user) {
         validate(user);
-        return userStorage.changeUser(user);
+        if (userStorage.keyUsers().contains(user.getId())) {
+            return userStorage.changeUser(user);
+        } else {
+            throw new UserNotFoundException("Пользователь с таким Id  не существует.");
+        }
     }
 
     public void removeUser(Long idUser) {
-        userStorage.removeUser(idUser);
+        if (userStorage.keyUsers().contains(idUser)) {
+            userStorage.removeUser(idUser);
+        } else {
+            throw new UserNotFoundException("Пользователь с таким Id  не существует.");
+        }
     }
 
     public Collection<User> allFriendsUser(Long id) {
@@ -43,15 +52,27 @@ public class UserService {
     }
 
     public User getUser(Long id) {
-        return userStorage.findUser(id);
+        if (userStorage.keyUsers().contains(id)) {
+            return userStorage.findUser(id);
+        } else {
+            throw new UserNotFoundException("Пользователь с таким Id  не существует.");
+        }
     }
 
     public void addInFriends(Long id, Long friendId) {
-        userStorage.addUserInFriend(id, friendId);
+        if (userStorage.keyUsers().contains(id) && userStorage.keyUsers().contains(friendId)) {
+            userStorage.addUserInFriend(id, friendId);
+        } else {
+            throw new UserNotFoundException("Пользователь с таким Id  не существует.");
+        }
     }
 
     public void deleteUserInFriends(Long id, Long friendId) {
-        userStorage.removeUserInFriends(id, friendId);
+        if (userStorage.keyUsers().contains(id)) {
+            userStorage.removeUserInFriends(id, friendId);
+        } else {
+            throw new UserNotFoundException("Пользователь с таким Id  не существует.");
+        }
     }
 
     public Collection<User> allMutualFriends(Long id, Long otherId) {
