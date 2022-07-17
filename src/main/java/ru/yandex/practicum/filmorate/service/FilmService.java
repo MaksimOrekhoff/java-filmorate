@@ -86,20 +86,12 @@ public class FilmService {
     }
 
     public void validate(Film film) {
-        if (film.getName().isBlank()) {
-            throw new ValidationException("Название не может быть пустым.");
-        }
-
         if (film.getDescription().length() > 200) {
             throw new ValidationException("Описание фильма превышает 200 символов.");
         }
 
         if (film.getReleaseDate().isBefore(happyBirthdayMovie)) {
             throw new ValidationException("Релиз фильма раньше рождения кино в истории.");
-        }
-
-        if (film.getDuration() < 0) {
-            throw new ValidationException("Продолжительность фильма не может быть отрицательной.");
         }
     }
 

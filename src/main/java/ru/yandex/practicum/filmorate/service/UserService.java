@@ -80,19 +80,6 @@ public class UserService {
     }
 
     public void validate(User user) {
-
-        if (user.getEmail() == null || user.getEmail().isBlank()) {
-            throw new InvalidEmailException("Адрес электронной почты не может быть пустым.");
-        }
-
-        if (!user.getEmail().contains("@")) {
-            throw new InvalidEmailException("Адрес электронной почты должен содержать символ @.");
-        }
-
-        if (user.getLogin() == null || user.getLogin().isBlank()) {
-            throw new ValidationException("Login не может быть пустым.");
-        }
-
         if (user.getLogin().contains(" ")) {
             throw new ValidationException("Login не может содержать пробелы.");
         }
@@ -101,7 +88,7 @@ public class UserService {
             user.setName(user.getLogin());
         }
 
-        if (user.getBirthday().compareTo(LocalDate.now()) > 0) {
+        if (user.getBirthday().isAfter(LocalDate.now())) {
             throw new ValidationException("Пользователь еще не родился.");
         }
 
