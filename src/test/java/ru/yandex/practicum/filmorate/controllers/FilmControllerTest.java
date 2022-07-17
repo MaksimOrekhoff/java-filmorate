@@ -15,12 +15,6 @@ class FilmControllerTest {
     FilmService filmService = new FilmService(new InMemoryFilmStorage());
 
     @Test
-    void validateEmailIsEmpty() {
-        final Film film = new Film(1, "", "Drama", LocalDate.of(1996, 7, 3), 120, new HashSet<>());
-        assertThrows(ValidationException.class, () -> filmService.validate(film));
-    }
-
-    @Test
     void validateDescriptionFilmMore200() {
         String description = "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111" +
                 "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111";
@@ -34,10 +28,5 @@ class FilmControllerTest {
         assertThrows(ValidationException.class, () -> filmService.validate(film));
     }
 
-    @Test
-    void validateDurationFilmIsNegative() {
-        final Film film = new Film(1, "Name", "Drama", LocalDate.of(1996, 7, 3), -120, new HashSet<>());
-        assertThrows(ValidationException.class, () -> filmService.validate(film));
-    }
 
 }
