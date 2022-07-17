@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
+import javax.validation.Valid;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -40,12 +41,12 @@ public class FilmController {
     }
 
     @PostMapping
-    public Film create(@RequestBody Film film) {
+    public Film create(@Valid @RequestBody Film film) {
         return filmService.addFilm(film);
     }
 
     @PutMapping
-    public Film changeFilm(@RequestBody Film film) {
+    public Film changeFilm(@Valid @RequestBody Film film) {
         return filmService.changesFilm(film);
     }
 
@@ -59,8 +60,5 @@ public class FilmController {
         filmService.removeLike(id, userId);
     }
 
-    @ExceptionHandler
-    public Map<String, String> handleNegativeCount(final IllegalArgumentException e) {
-        return Map.of("error", "Передан отрицательный параметр count.");
-    }
+
 }
