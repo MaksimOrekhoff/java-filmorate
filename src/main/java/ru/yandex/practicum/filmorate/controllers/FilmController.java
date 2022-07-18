@@ -1,70 +1,63 @@
 package ru.yandex.practicum.filmorate.controllers;
 
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exceptions.InvalidEmailException;
-import ru.yandex.practicum.filmorate.exceptions.UserAlreadyExistException;
-import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
-import javax.servlet.http.HttpServletRequest;
-import java.time.LocalDate;
+import javax.validation.Valid;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 @RestController
 @RequestMapping("/films")
-@Slf4j
 public class FilmController {
-    private final Map<Long, Film> films = new HashMap<>();
-    private long id = 0;
-    private final LocalDate happyBirthdayMovie = LocalDate.of(1895, 12, 28);
+    private final FilmService filmService;
+
+    @Autowired
+    public FilmController(FilmService filmService) {
+        this.filmService = filmService;
+    }
 
     @GetMapping
-    public Collection<Film> findAll() {
-        log.debug("Текущее количество фильмов: {}", films.size());
-        return films.values();
+    public Collection<Film> findAllFilms() {
+        return filmService.allFilms();
+    }
+
+    @GetMapping("/{id}")
+    public Film findFilm(@PathVariable Long id) {
+        return filmService.getFilm(id);
+    }
+
+    @GetMapping("/popular")
+    public List<Film> topPopularFilms(@RequestParam(required = false) Integer count) {
+        return filmService.allPopFilms(count);
+    }
+
+    @PutMapping("/{id}/like/{userId}")
+    public Film userSetLike(@PathVariable Long id, @PathVariable Long userId) {
+        return filmService.setLike(id, userId);
     }
 
     @PostMapping
-    public Film create(@RequestBody Film film, HttpServletRequest request) {
-        validate(film);
-        film.setId(++id);
-        films.put(id, film);
-        log.info("Получен запрос к эндпоинту: '{} {}', Строка параметров запроса: '{}'",
-                request.getMethod(), request.getRequestURI(), request.getQueryString());
-        return films.get(id);
+    public Film create(@Valid @RequestBody Film film) {
+        return filmService.addFilm(film);
     }
 
     @PutMapping
-    public Film put(@RequestBody Film film) {
-        if (films.containsKey(film.getId())) {
-            validate(film);
-            films.put(film.getId(), film);
-            log.debug("Текущее количество фильмов: {}", films.size());
-            return film;
-        } else {
-            throw new UserAlreadyExistException("Фильм с таким Id не существует.");
-        }
+    public Film changeFilm(@Valid @RequestBody Film film) {
+        return filmService.changesFilm(film);
     }
 
-    public void validate(Film film) {
-        if (film.getName() == null || film.getName().isBlank()) {
-            throw new ValidationException("Название не может быть пустым.");
-        }
-
-        if (film.getDescription().length() > 200) {
-            throw new ValidationException("Описание фильма превышает 200 символов.");
-        }
-
-        if (film.getReleaseDate().compareTo(happyBirthdayMovie) < 0) {
-            throw new ValidationException("Релиз фильма раньше рождения кино в истории.");
-        }
-
-        if (film.getDuration() < 0) {
-            throw new ValidationException("Продолжительность фильма не может быть отрицательной.");
-        }
+    @DeleteMapping("/{idFilm}")
+    public void deletesFilm(@PathVariable Long idFilm) {
+        filmService.removeFilm(idFilm);
     }
+
+    @DeleteMapping("/{id}/like/{userId}")
+    public void userRemoveLike(@PathVariable Long id, @PathVariable Long userId) {
+        filmService.removeLike(id, userId);
+    }
+
 
 }
