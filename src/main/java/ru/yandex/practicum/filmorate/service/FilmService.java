@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -78,11 +79,7 @@ public class FilmService {
 
     public List<Film> allPopFilms(Integer count) {
         List<Film> films = filmStorage.popularFilms(count);
-        if (count == null) {
-            return films.stream().limit(10).collect(Collectors.toList());
-        } else {
-            return films.stream().limit(count).collect(Collectors.toList());
-        }
+        return films.stream().limit(Objects.requireNonNullElse(count, 10)).collect(Collectors.toList());
     }
 
     public void validate(Film film) {
